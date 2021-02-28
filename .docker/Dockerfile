@@ -27,9 +27,14 @@ RUN apt-get install -y \
     zlib1g-dev \
     vim \
     libzip-dev \
-    libpcre3-dev \
-    nodejs \
-    npm
+    zip \
+    libpcre3-dev
+
+# intall nodejs and npm
+RUN curl -sL https://deb.nodesource.com/setup_14.x | sh
+RUN apt-get install -y nodejs
+RUN curl -sL https://www.npmjs.com/install.sh | sh
+
 
 # Install PECL and PEAR extensions
 RUN pecl channel-update pecl.php.net && \
@@ -69,7 +74,9 @@ RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/
 RUN npm -g install @vue/cli
 
 # Install PHP_CodeSniffer
-RUN composer global require "squizlabs/php_codesniffer=*"
+RUN composer global require \
+    squizlabs/php_codesniffer \
+    laravel/installer
 
 # Getting config files
 RUN mkdir /var/.docker/

@@ -39,10 +39,15 @@ if [[ $SSL_SELF_SIGNED == 1 ]]; then
   echo "######## Setup apache VirtualHost $DOMAIN #########"
 else
   echo "######## Without SSL ########"
-  echo -e "\nServerName $DOMAIN" >> /etc/apache2/sites-available/000-default.conf
+  mkdir $DOCUMENT_ROOT
   cat /etc/apache2/sites-available/000-default.conf |
     sed s/localhost/"$DOMAIN\n\tServerName $DOMAIN"/g > /etc/apache2/sites-available/_000-default.conf
-  cp /etc/apache2/sites-available/_000-default.conf /etc/apache2/sites-available/000-default.conf
+  rm /etc/apache2/sites-available/000-default.conf
+  echo "domain changed"
+  cat /etc/apache2/sites-available/_000-default.conf |
+    sed "s|/var/www/html|$DOCUMENT_ROOT|g" > /etc/apache2/sites-available/000-default.conf
+  rm /etc/apache2/sites-available/_000-default.conf
+  echo "document root changed"
 fi
 
 # Setting up apache
