@@ -1,29 +1,34 @@
 version: "3"
 
 services:
-  backend:
-    build: ./
+  web:
+    build:
+      context: .docker
+      args:
+        - DOMAIN=dev.th3cod3.com
+        - SSL_SELF_SIGNED=0
+        - PHALCON=0
+        - DOCUMENT_ROOT=/var/www/html
     volumes:
       - ./src:/var/www/html
-      - ./devops/php.ini:/usr/local/etc/php/php.ini
     ports:
       - "80:80"
       - "443:443"
-      - "8000:8000"
     command: bash -c "service apache2 start && tail -f /dev/stderr"
     environment:
       XDEBUG_CONFIG: remote_host=host.docker.internal
     depends_on:
       - db
   db:
-    image: mariadb:10.4
+    image: mariadb:latest
     volumes:
-      - "./dump:/docker-entrypoint-initdb.d"
+      # - "./dump:/docker-entrypoint-initdb.d"
       - "v-db:/var/lib/mysql"
     ports:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=admin
-    command: 'mysqld --innodb-flush-method=fsync --sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTIO"'
+      - MYSQL_DATABASE=dev
+    command: 'mysqld --sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTIO"'
 volumes:
   v-db:
